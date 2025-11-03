@@ -87,6 +87,12 @@ def setup_base_data(conn):
     print("Setting up base data...")
     cursor = conn.cursor()
     
+    # Create brand first
+    cursor.execute(
+        "INSERT INTO brands (id, name) VALUES (%s, %s) ON CONFLICT (id) DO NOTHING",
+        (BRAND_ID, 'Challenge Restaurant Group')
+    )
+    
     # Sub-brands
     sub_brands = ['Challenge Burger', 'Challenge Pizza', 'Challenge Sushi']
     sub_brand_ids = []

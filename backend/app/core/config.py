@@ -17,7 +17,12 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://challenge:challenge_2024@localhost:5432/challenge_db"
     
     # CORS
-    BACKEND_CORS_ORIGINS: list = ["http://localhost:3000", "http://localhost:5173"]
+    BACKEND_CORS_ORIGINS: str = "http://localhost:3000,http://localhost:5173"
+    
+    @property
+    def cors_origins(self) -> list:
+        """Get CORS origins as list"""
+        return [origin.strip() for origin in self.BACKEND_CORS_ORIGINS.split(',')]
     
     # Redis Cache
     REDIS_HOST: str = "localhost"
