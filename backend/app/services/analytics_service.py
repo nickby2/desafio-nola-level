@@ -286,13 +286,16 @@ class AnalyticsService:
     def get_delivery_performance(self, date_range: Optional[DateRangeFilter] = None,
                                 filters: Optional[DimensionFilter] = None) -> List[DeliveryPerformanceItem]:
         """Get delivery performance by location"""
+        avg_delivery = func.avg(Sale.delivery_seconds / 60.0)
+        avg_production = func.avg(Sale.production_seconds / 60.0)
+        
         query = self.db.query(
             DeliveryAddress.neighborhood,
             DeliveryAddress.city,
             func.count(Sale.id).label('total_deliveries'),
-            func.avg(Sale.delivery_seconds / 60.0).label('avg_delivery_time'),
-            func.avg(Sale.production_seconds / 60.0).label('avg_production_time'),
-            (func.avg(Sale.delivery_seconds / 60.0) + func.avg(Sale.production_seconds / 60.0)).label('total_time')
+            avg_delivery.label('avg_delivery_time'),
+            avg_production.label('avg_production_time'),
+            (avg_delivery + avg_production).label('total_time')
         ).select_from(Sale)\
          .join(DeliveryAddress, Sale.id == DeliveryAddress.sale_id)
         
